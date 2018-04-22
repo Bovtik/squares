@@ -1,3 +1,7 @@
+const randomColor = function randomColor() {
+  return '#' + Math.floor(Math.random() * (2<<23)).toString(16);
+} 
+
 class Square {
   constructor(props) {
     this.x = props.x || 0;
@@ -59,18 +63,19 @@ for (let i = 0; i < 400; i++) {
     x: gridSize * (i % 20 + .5),
     y: gridSize * (Math.floor(i / 20) + .5),
     size: gridSize/2,
-    color: "#ffffff",
+    // color: "#ffffff",
+    color: randomColor(),
     alpha: .5,
     animation: {
       progress: Math.random().toFixed(4),
-      duration: 2500,
+      duration: 1000 + Math.floor(Math.random() * 1500),
       start: {
         alpha: 0.15,
-        scale: 1.25
+        scale: 1
       },
       end: {
         alpha: 1,
-        scale: 0.5
+        scale: 2
       }
     }
   }));
