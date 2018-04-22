@@ -9,7 +9,7 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  background-color: #fcfcfc;
+  background-color: #000;
   font-family: arial, sans-serif;
   font-size: 16px;
   line-height: 1;
@@ -17,32 +17,6 @@ body {
 
 #canvas {
   background: #000;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .3);
-  cursor: crosshair;
+  /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, .3); */
+  cursor: none;
 }
-
-.info {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: auto;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, .5);
-  /* border: 3px solid #222; */
-}
-  .info-block {
-    margin: 5px 0;
-    font-size: 0;
-    font-weight: 700;
-    color: #f44;
-  }
-  .info-block__caption,
-  .info-block__value {
-    display: inline-block;
-    font-size: 24px;
-  }
-  .info-block__caption {
-    margin-right: 10px;
-    color: #222;
-    /* width: 50%; */
-  }

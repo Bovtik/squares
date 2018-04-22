@@ -2,6 +2,10 @@ const randomColor = function randomColor() {
   return '#' + Math.floor(Math.random() * (2<<23)).toString(16);
 } 
 
+const distance = function distance (v1, v2) {
+  return Math.pow(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2), .5);
+}
+
 class Square {
   constructor(props) {
     this.x = props.x || 0;
@@ -11,8 +15,10 @@ class Square {
     this.color = props.color || "#ffffff";
     this.alpha = props.alpha || 1;
 
-    this.animation = props.animation;
-    this.animCounter = props.animation.progress * props.animation.duration || 0;
+    if (props.animation) {
+      this.animation = props.animation;
+      this.animCounter = props.animation.progress * props.animation.duration || 0;
+    }
   }
   animate(fps) {
     let progress = this.animCounter / this.animation.duration; 
@@ -46,46 +52,86 @@ class Square {
 
 
 const canvasSize = window.innerHeight;
-const fieldSize = 400;
+const fieldSize = 512;
 
 let scaleRatio = canvasSize / fieldSize;
 
 const canvas = document.getElementById('canvas');
+// canvas.width = window.innerWidth;
 canvas.width = canvasSize;
 canvas.height = canvasSize;
 const ctx = canvas.getContext('2d');
 ctx.setTransform(scaleRatio, 0, 0, scaleRatio, 0, 0);
 
-const gridSize = fieldSize / 20;
+const squareAmount = 96;
+const gridSize = fieldSize / squareAmount;
+
 var squares = [];
-for (let i = 0; i < 400; i++) {
+var anims = {
+  randomColor: {
+    progress: Math.random().toFixed(4),
+    duration: 1000 + Math.floor(Math.random() * 1500),
+    start: {
+      alpha: 0.15,
+      scale: 1
+    },
+    end: {
+      alpha: 1,
+      scale: 2
+    }
+  },
+};
+for (let i = 0; i < squareAmount*squareAmount; i++) {
   squares.push(new Square({
-    x: gridSize * (i % 20 + .5),
-    y: gridSize * (Math.floor(i / 20) + .5),
-    size: gridSize/2,
+    x: gridSize * (i % squareAmount + .5),
+    y: gridSize * (Math.floor(i / squareAmount) + .5),
+    size: gridSize,
     // color: "#ffffff",
     color: randomColor(),
-    alpha: .5,
-    animation: {
-      progress: Math.random().toFixed(4),
-      duration: 1000 + Math.floor(Math.random() * 1500),
-      start: {
-        alpha: 0.15,
-        scale: 1
-      },
-      end: {
-        alpha: 1,
-        scale: 2
-      }
-    }
+    alpha: .2,
+    animation: anims.randomColor
   }));
 }
 
 const draw = function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  squares.forEach( item => item.animate(60).draw(ctx) );
+  squares.forEach( item => item.draw(ctx) );
 }
 
 setInterval(() => {
   window.requestAnimationFrame(draw);
 }, 1000 / 60);
+
+const mouse = {
+  x: 0,
+  y: 0,
+  radius: 80
+};
+canvas.addEventListener('mousemove', (e) => {
+  // console.log(e);
+  
+  // console.log(e.layerX / scaleRatio, e.layerY / scaleRatio);
+  mouse.x = Math.round(e.layerX / scaleRatio);
+  mouse.y = Math.round(e.layerY / scaleRatio);
+  squares.forEach( (item) => {
+    // console.log(distance(mouse, item));
+    
+    if (distance(mouse, item) < mouse.radius) {
+      // let ratio = 1 - .27 * (2 + Math.cos((26 * distance(mouse, item) / mouse.radius)));
+      let ratio = 1 - Math.pow(distance(mouse, item) / mouse.radius, 2);
+      item.alpha = .2 + ratio * .8;
+      item.size = item.defaultSize;
+      item.size *= ratio + .2;
+      // if (item.x )
+    } else {
+      item.size = item.defaultSize;
+      item.alpha = 0;
+
+      // if (e.buttons) {
+        item.animate(60);
+      // }
+    }
+  });
+  // console.log(mouse)
+  // if (distance(mouse, ))
+});
