@@ -2,7 +2,8 @@ class Square {
   constructor(props) {
     this.x = props.x || 0;
     this.y = props.y || 0;
-    this.size = props.size || 1;
+    this.defaultSize = props.size || 1;
+    this.size = this.defaultSize;
     this.color = props.color || "#ffffff";
     this.alpha = props.alpha || 1;
 
@@ -11,13 +12,18 @@ class Square {
   }
   animate(fps) {
     let progress = this.animCounter / this.animation.duration; 
+    
     if (progress >= 1) {
       this.animCounter = 0;
     } else {
-      this.animCounter += fps;  
+      this.animCounter += fps/2;  
     }
-
-    this.alpha = this.animation.start.alpha + progress * (this.animation.end.alpha - this.animation.start.alpha);
+    if (progress > .5) {
+      progress = 1 - progress; 
+    }
+    this.alpha = this.animation.start.alpha + 2*progress * (this.animation.end.alpha - this.animation.start.alpha);
+    this.size = this.defaultSize;
+    this.size *= this.animation.start.scale + 2*progress * (this.animation.end.scale - this.animation.start.scale);
 
     return this;
   }
@@ -37,7 +43,6 @@ class Square {
 
 const canvasSize = window.innerHeight;
 const fieldSize = 400;
-// const viewSize = fieldSize;
 
 let scaleRatio = canvasSize / fieldSize;
 
@@ -58,14 +63,14 @@ for (let i = 0; i < 400; i++) {
     alpha: .5,
     animation: {
       progress: Math.random().toFixed(4),
-      duration: 2000,
+      duration: 2500,
       start: {
-        alpha: 0,
-        scale: 0.5
+        alpha: 0.15,
+        scale: 1.25
       },
       end: {
         alpha: 1,
-        scale: 1.2
+        scale: 0.5
       }
     }
   }));
