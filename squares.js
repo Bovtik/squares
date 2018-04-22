@@ -89,13 +89,27 @@ for (let i = 0; i < squareAmount*squareAmount; i++) {
     // color: "#ffffff",
     color: randomColor(),
     alpha: .2,
-    animation: anims.randomColor
+    animation: {
+      progress: Math.random().toFixed(4),
+      duration: 1000 + Math.floor(Math.random() * 1500),
+      start: {
+        alpha: 0.15,
+        scale: 1
+      },
+      end: {
+        alpha: 1,
+        scale: 2
+      }
+    }
   }));
 }
 
 const draw = function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  squares.forEach( item => item.draw(ctx) );
+  squares.forEach( item => {
+    if (distance(mouse, item) > mouse.radius) item.animate(60);
+    item.draw(ctx); 
+  });
 }
 
 setInterval(() => {
@@ -105,7 +119,7 @@ setInterval(() => {
 const mouse = {
   x: 0,
   y: 0,
-  radius: 80
+  radius: 48
 };
 canvas.addEventListener('mousemove', (e) => {
   // console.log(e);
@@ -118,7 +132,7 @@ canvas.addEventListener('mousemove', (e) => {
     
     if (distance(mouse, item) < mouse.radius) {
       // let ratio = 1 - .27 * (2 + Math.cos((26 * distance(mouse, item) / mouse.radius)));
-      let ratio = 1 - Math.pow(distance(mouse, item) / mouse.radius, 2);
+      let ratio = distance(mouse, item) / mouse.radius;
       item.alpha = .2 + ratio * .8;
       item.size = item.defaultSize;
       item.size *= ratio + .2;
@@ -126,10 +140,6 @@ canvas.addEventListener('mousemove', (e) => {
     } else {
       item.size = item.defaultSize;
       item.alpha = 0;
-
-      // if (e.buttons) {
-        item.animate(60);
-      // }
     }
   });
   // console.log(mouse)
